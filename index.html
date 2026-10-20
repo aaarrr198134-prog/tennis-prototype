@@ -16,16 +16,31 @@ header{z-index:5;min-height:105px;padding:12px 18px 9px;border-bottom:1px solid 
 dialog{width:min(92vw,460px);border:1px solid #345565;border-radius:16px;padding:24px;background:#102332;color:var(--ink);box-shadow:0 24px 100px #0008}dialog::backdrop{background:#030b14bb}dialog h1{font-size:23px;margin:0 0 14px}dialog p{font-size:14px;line-height:1.6;color:#bdcdd5}dialog kbd{background:#263e50;padding:2px 5px;border-radius:4px;font-size:12px}dialog .small{width:100%;margin-top:10px}#intro{position:absolute;top:12px;left:8%;right:8%;color:#c1d8e0;text-align:center;pointer-events:none;font-size:12px;line-height:1.6}#intro strong{color:var(--ink)}
 @media(max-width:440px){header{padding:10px 12px 7px;gap:5px 7px}#score{font-size:22px}.toolbar{gap:4px}.small{font-size:10px;padding:8px 7px}.eyebrow{font-size:9px}.notice{font-size:16px}#chargeLabel{font-size:9px}}
 @media(max-height:620px){header{min-height:83px;padding-top:6px;padding-bottom:5px}.eyebrow{display:none}#score{font-size:21px}#status{font-size:10px}#games{font-size:10px}.notice{font-size:14px;padding:9px}#intro{font-size:10px;top:5px}}
+#app{position:relative}#splash{position:absolute;inset:0;z-index:20;display:grid;place-items:center;overflow:auto;padding:28px 26px;background:radial-gradient(ellipse at 90% 5%,#1b504d80,transparent 55%),radial-gradient(ellipse at 0% 100%,#743d2930,transparent 55%),#0c1824}.splash-content{width:min(100%,380px);margin:auto}#splash .eyebrow{display:block;font-size:10px;letter-spacing:.22em;color:#91a8b5}.splash-mark{width:48px;height:48px;border-radius:50%;background:var(--teal);margin-bottom:24px;position:relative;overflow:hidden;transform:rotate(-35deg)}.splash-mark::before,.splash-mark::after{content:"";position:absolute;width:50px;height:60px;border:2px solid #0c1824;border-radius:50%;top:-6px}.splash-mark::before{left:-34px}.splash-mark::after{right:-34px}#splash h1{font-size:clamp(38px,9vw,64px);line-height:1.03;letter-spacing:-.045em;margin:15px 0 30px;font-weight:750}#splash h1 em{font-style:normal;color:var(--teal)}.credits{border-top:1px solid #39515e;border-bottom:1px solid #39515e;padding:13px 0;margin-bottom:28px}.credits p{margin:12px 0;font-size:13px;line-height:1.5;display:flex;flex-wrap:wrap;gap:2px 8px;justify-content:space-between}.credits span{color:#a9bdc8}.credits strong{font-weight:550;color:#eaf4f4}#play{width:100%;min-height:56px;border-radius:9px;background:var(--coral);color:#0c1824;padding:16px 20px;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:space-between}#play:hover{background:#ffb19d}#play span{font-size:23px;line-height:1}.splash-note{font-size:10px;text-align:center;color:#91a8b5;margin:15px 0 0}@media(max-height:620px){#splash{padding:22px 25px}.splash-mark{width:36px;height:36px;margin-bottom:17px}#splash h1{font-size:43px;margin:12px 0 23px}.credits{margin-bottom:22px;padding:8px 0}.credits p{margin:9px 0;font-size:12px}#play{min-height:48px;padding:12px 18px}}@media(prefers-reduced-motion:no-preference){#play{transition:background .15s}}
 </style>
 </head>
 <body>
 <main id="app">
-<header>
+<section id="splash" role="dialog" aria-modal="true" aria-labelledby="splashTitle">
+<div class="splash-content">
+<div class="splash-mark" aria-hidden="true"><span></span></div>
+<div class="eyebrow">TENNIS / PROTOTYPE</div>
+<h1 id="splashTitle">Большой<br><em>теннис</em></h1>
+<div class="credits">
+<p><span>Идея:</span><strong>Реутов Андрей</strong></p>
+<p><span>Разработка:</span><strong>Реутов Андрей</strong></p>
+<p><span>Ассистент и коддинг:</span><strong>ChatGPT</strong></p>
+</div>
+<button id="play" type="button">Играть <span aria-hidden="true">↗</span></button>
+<p class="splash-note">Компьютер и смартфон · одиночная игра</p>
+</div>
+</section>
+<header inert>
 <div><div class="eyebrow">TENNIS / PROTOTYPE</div><div id="score" aria-live="polite">ВЫ 0 : 0 БОТ</div><div id="games">Геймы 0 : 0 · Подаёте вы</div></div>
 <div class="toolbar"><button id="help" class="small" aria-label="Как играть">?</button><button id="layout" class="small">Настроить</button><button id="pause" class="small" aria-label="Пауза">Ⅱ</button><button id="start" class="small accent">Старт</button></div>
 <div id="status" aria-live="polite">Нажми «Старт» для игры с соперником</div>
 </header>
-<section id="arena" aria-label="Теннисный корт">
+<section id="arena" aria-label="Теннисный корт" inert>
 <canvas id="court" tabindex="0" aria-label="Игровое поле. WASD — движение, мышь и стрелки — прицел, Пробел — силовой удар, левый Shift — свеча."></canvas>
 <div id="intro"><strong>Твой следующий розыгрыш</strong><br>Зажми силовой для подачи. Отпусти, чтобы ударить.<br><button id="mode" class="small" style="pointer-events:auto;margin-top:10px">Режим: соперник</button></div>
 <div id="controls">
@@ -150,7 +165,7 @@ root.Tennis=API;
 function boot(){
 const $=id=>document.getElementById(id),canvas=$('court'),ctx=canvas.getContext('2d',{alpha:false}),arena=$('arena'),game=new Game();root.TennisGame=game;
 if(!ctx){$('status').textContent='Браузер не поддерживает Canvas. Открой игру в современном браузере.';return}
-let W=430,H=800,viewH=530,controlH=260,dpr=1,editing=false,layoutBefore=null,priorPause=false,mousePrevious=null,mouseAnchored=false,keys=new Set(),powerSources=new Set(),stickInput={move:V(),aim:V()},last=0,accumulator=0,frame=0,customLayout=null,cancelPointers=[];
+let W=430,H=800,viewH=530,controlH=260,dpr=1,editing=false,layoutBefore=null,priorPause=false,mousePrevious=null,mouseAnchored=false,keys=new Set(),powerSources=new Set(),stickInput={move:V(),aim:V()},last=0,accumulator=0,frame=0,customLayout=null,cancelPointers=[],splashVisible=true;
 const elements=Object.fromEntries([...document.querySelectorAll('[data-control]')].map(e=>[e.dataset.control,e]));
 try{customLayout=JSON.parse(localStorage.getItem('TennisWeb.ControlLayout.v1'))}catch{}
 function defaults(){return{move:{x:.25,y:1-(22+sizeOf('move')/2)/H},aim:{x:.75,y:1-(22+sizeOf('move')/2)/H},power:{x:.145,y:1-controlH*.88/H},lob:{x:.365,y:1-controlH*.88/H}}}
@@ -169,12 +184,13 @@ function readStick(ev){let r=e.getBoundingClientRect(),radius=r.width/2,v=bounde
 e.addEventListener('pointermove',ev=>{if(ev.pointerId!==owner)return;if(editing){let r=arena.getBoundingClientRect();layout[name]={x:(ev.clientX-r.left+dragOffset.x)/W,y:(ev.clientY-r.top+dragOffset.z)/H};place()}else if(name==='move'||name==='aim')readStick(ev)});
 e.addEventListener('pointerup',ev=>{if(ev.pointerId!==owner)return;if(!editing){if(name==='power')releasePower('pointer'+owner);else if(name==='move'||name==='aim'){stickInput[name]=V();e.querySelector('.knob').style.transform='translate(0,0)';commands()}e.classList.remove('held')}owner=null});
 e.addEventListener('pointercancel',()=>{owner=null;cancelInput()});e.addEventListener('lostpointercapture',()=>{if(owner!==null){owner=null;cancelInput()}});e.addEventListener('contextmenu',e=>e.preventDefault());}
-window.addEventListener('keydown',ev=>{if(ev.target instanceof HTMLButtonElement&&ev.code==='Enter')return;let codes=['Space','ShiftLeft','KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'];if(!codes.includes(ev.code))return;ev.preventDefault();if(editing||$('helpDialog').open||game.paused)return;keys.add(ev.code);commands();if(!ev.repeat){if(ev.code==='Space')pressPower('keyboard');if(ev.code==='ShiftLeft')game.press('lob')}});
-window.addEventListener('keyup',ev=>{keys.delete(ev.code);commands();if(ev.code==='Space'){ev.preventDefault();releasePower('keyboard')}});
+window.addEventListener('keydown',ev=>{if(splashVisible)return;if(ev.target instanceof HTMLButtonElement&&ev.code==='Enter')return;let codes=['Space','ShiftLeft','KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'];if(!codes.includes(ev.code))return;ev.preventDefault();if(editing||$('helpDialog').open||game.paused)return;keys.add(ev.code);commands();if(!ev.repeat){if(ev.code==='Space')pressPower('keyboard');if(ev.code==='ShiftLeft')game.press('lob')}});
+window.addEventListener('keyup',ev=>{if(splashVisible)return;keys.delete(ev.code);commands();if(ev.code==='Space'){ev.preventDefault();releasePower('keyboard')}});
 canvas.addEventListener('pointerdown',ev=>{if(editing||ev.offsetY>viewH||ev.pointerType==='touch')return;ev.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(ev.pointerId);if(ev.button===0)pressPower('mouse');if(ev.button===2)game.press('lob')});
 canvas.addEventListener('pointerup',ev=>{if(ev.button===0)releasePower('mouse')});canvas.addEventListener('pointercancel',cancelInput);canvas.addEventListener('contextmenu',ev=>ev.preventDefault());
 canvas.addEventListener('pointermove',ev=>{if(editing||game.paused||ev.pointerType==='touch'||ev.offsetY>viewH)return;let p=groundPoint(ev.offsetX,ev.offsetY);if(!p)return;if(mousePrevious&&mouseAnchored){let previous=groundPoint(mousePrevious.x,mousePrevious.y);if(previous)game.manualAim(V(p.x-previous.x,0,p.z-previous.z))}else{game.manualAim(p,true);mouseAnchored=true}mousePrevious={x:ev.offsetX,y:ev.offsetY}});
 window.addEventListener('blur',()=>{cancelInput();last=0});document.addEventListener('visibilitychange',()=>{cancelInput();last=0});
+$('play').onclick=()=>{if(!splashVisible)return;cancelInput();splashVisible=false;$('splash').hidden=true;document.querySelector('header').inert=false;arena.inert=false;game.toggle();last=0;accumulator=0;canvas.focus({preventScroll:true});ui()};
 $('start').onclick=()=>{cancelInput();game.toggle();canvas.focus({preventScroll:true});ui()};$('pause').onclick=()=>{game.paused=!game.paused;cancelInput();ui()};$('mode').onclick=()=>{cancelInput();game.setMode(game.mode==='match'?'training':'match');ui()};
 function openEdit(){cancelInput();for(let id of['help','pause','start'])$(id).disabled=true;$('editHint').textContent='Перетащи джойстики и кнопки в удобные места';editing=true;priorPause=game.paused;game.paused=true;layoutBefore=JSON.parse(JSON.stringify(layout));$('app').classList.add('editing');$('editbar').hidden=false;ui()}
 function closeEdit(save){for(let id of['help','pause','start'])$(id).disabled=false;if(!save)layout=layoutBefore;editing=false;game.paused=priorPause;cancelInput();$('app').classList.remove('editing');$('editbar').hidden=true;place();ui()}
@@ -201,7 +217,7 @@ if(game.mode==='match')character(game.bot,true);else{polygon([V(-.45,0,12),V(.45
 if(game.ball.p.z>0)drawBall();drawNet();character(game.player,false);if(game.ball.p.z<=0)drawBall();ctx.restore();ctx.fillStyle='#57dac329';ctx.fillRect(0,viewH,W,1);if(game.paused&&!editing&&!$('helpDialog').open){ctx.fillStyle='#06101aaa';ctx.fillRect(0,0,W,viewH);ctx.fillStyle='#eaf4f4';ctx.font='600 20px system-ui';ctx.textAlign='center';ctx.fillText('Пауза',W/2,viewH/2)}frame++}
 function ui(){let s=game.score;$('score').textContent=game.mode==='match'?`ВЫ ${s.display(s.p,s.b)} : ${s.display(s.b,s.p)} БОТ`:'ТРЕНИРОВКА';$('games').textContent=game.mode==='match'?`Геймы ${s.pg} : ${s.bg} · Подаёт ${s.humanServes?'игрок':'соперник'}`:`Удары ${game.contacts} · мячи ${game.feeds}`;$('status').textContent=game.status;$('start').textContent=game.running?'Стоп':'Старт';$('pause').textContent=game.paused?'▶':'Ⅱ';$('pause').setAttribute('aria-label',game.paused?'Продолжить':'Пауза');$('intro').hidden=game.running;$('mode').textContent=game.mode==='match'?'Режим: соперник':'Режим: тренировка';$('charge').hidden=!game.serving;$('chargeLabel').textContent=`ПОДАЧА ${Math.round(game.charge*100)}% · держи и отпусти СИЛОВОЙ`;$('chargeFill').style.width=game.charge*100+'%';$('out').hidden=game.noticeTime<=0;$('out').textContent=game.notice;$('out').style.opacity=clamp(game.noticeTime/.3,0,1);$('point').hidden=game.pointTime<=0;$('point').textContent=game.pointNotice;$('telemetry').textContent=`${len(game.pv).toFixed(1)} м/с · ${game.mode==='match'?'матч':'тренировка'} · ${game.contacts} ударов`}
 function animate(time){let dt=last?Math.min((time-last)/1000,.1):0;last=time;if(document.hasFocus()&&!document.hidden){commands();accumulator+=dt;while(accumulator>=1/120){game.tick(1/120);accumulator-=1/120}}else accumulator=0;draw(dt);ui();requestAnimationFrame(animate)}
-window.addEventListener('resize',resize);resize();ui();requestAnimationFrame(animate);
+window.addEventListener('resize',resize);resize();ui();$('play').focus({preventScroll:true});requestAnimationFrame(animate);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })(globalThis);
